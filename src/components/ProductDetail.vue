@@ -1,6 +1,7 @@
 <template>
   <div v-bind:class="getClassByCategory(product.category)">
-    <div v-if="product && (product.category === 'men\'s clothing' || product.category === 'women\'s clothing')" class="content">
+    <div v-if="product && (product.category === 'men\'s clothing' || product.category === 'women\'s clothing')"
+      class="content">
       <div class="left">
         <img v-bind:src="product.image" alt="Product Image">
       </div>
@@ -26,14 +27,20 @@
           <p>${{ product.price }}</p>
           <div class="btn">
             <button class="buy-btn">Buy now</button>
-            <button @click="getNextProduct" class="next-btn">Next Product</button>
+            <button @click="getNextProduct" class="next-btn" :disabled="loading">
+              <span v-if="loading">Loading...</span>
+              <span v-else>Next Product</span>
+            </button>
           </div>
         </div>
       </div>
     </div>
     <div v-else class="content">
       <p>This product is unavailable to show</p>
-      <button @click="getNextProduct" class="next-btn">Next Product</button>
+      <button @click="getNextProduct" class="next-btn" :disabled="loading">
+        <span v-if="loading">Loading...</span>
+        <span v-else>Next Product</span>
+      </button>
     </div>
   </div>
 </template>
@@ -43,7 +50,8 @@ export default {
   data() {
     return {
       product: null,
-      index: 1
+      index: 1,
+      loading: false
     };
   },
   methods: {
@@ -66,8 +74,16 @@ export default {
       }
     },
     async getNextProduct() {
-      this.index = (this.index % 20) + 1; // Loop back to 1 when index reaches 20
-      this.product = await this.fetchProduct(this.index);
+      this.loading = true;
+
+      try {
+        this.index = (this.index % 20) + 1; 
+        this.product = await this.fetchProduct(this.index);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      } finally {
+        this.loading = false;
+      }
     }
   },
   async mounted() {
@@ -76,264 +92,4 @@ export default {
 };
 </script>
 
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-
-/* Vanilla CSS styles */
-:root {
-  --manPrimary-color: #002772;
-  --womenPrimary-color: #720060;
-  --manSecondary-color: #D6E6FF;
-  --womenSecondary-color: #FDE2FF;
-  --dark-color: #1E1E1E;
-  --litleDark-color: #3F3F3F;
-  --gray-color: #DCDCDC;
-  --white-color: #FFFFFF;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", sans-serif;
-}
-
-.content {
-  height: 580px;
-  display: flex;
-  width: 1034px;
-  padding: 50px 0;
-  background-color: white;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  justify-content: space-evenly;
-  align-items: center;
-  border-radius: 10px;
-  box-shadow: 0px 3px 5px 3px rgba(0, 0, 0, 0.2);
-  -webkit-box-shadow: 0px 3px 5px 3px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0px 3px 5px 3px rgba(0, 0, 0, 0.2);
-}
-.header .line {
-  border: 1px solid #DCDCDC;
-  width: 100%;
-  margin-top: 11px;
-}
-
-.right .line {
-  border: 1px solid #DCDCDC;
-  width: 100%;
-  margin-bottom: 15.5px;
-}
-
-.right .bottom p {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
-
-.content .left img{
-  width: 305px;
-}
-
-.content .right {
-  width: 548px;
-  height: 484px;
-  justify-content: space-between;
-  display: flex;
-  flex-direction: column;
-}
-
-
-.content .right .header .rate{
-  display: flex;
-  justify-content: space-between;
-  margin-top: 17px;
-}
-
-
-.content .right .header .rate h2 {
-  font-size: 18px;
-  font-weight: 400;
-}
-
-.content .right h1 {
-  font-size: 28px;
-  font-weight: 600;
-} 
-
-.content .right .header .desc {
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 24.2px;
-  margin-top: 26px;
-  height: 199px;
-  overflow-y: scroll;
-  width: 517px;
-  color: #1E1E1E;
-}
-
-.content .right .header .desc::-webkit-scrollbar {
-  width: 0px;
-  height: 0;
-}
-
-.content .right .header .desc::-webkit-scrollbar {
-  scrollbar-width: none;
-}
-
-.content .right .btn {
-  display: flex;
-  justify-content: space-between;
-}
-
-.content .right button {
-  width: 259px;
-  height: 42px;
-}
-
-.btn .buy-btn, .btn .next-btn {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.men-section, .women-section, .unavailable-product {
-  height: 585px;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.men-section {
-  background-color: #D6E6FF;
-}
-
-.men-section .content .right .header .rate .rating {
-  display: flex;
-  gap: 2px;
-}
-
-.men-section .content .right .header .rate .rating p {
-  margin-right: 5px;
-}
-
-.men-section .content .right .header .rate .circle{
-  background-color: #002772;
-  width: 18px;
-  height: 18px;
-  border-radius: 100%;
-}
-
-.men-section .content .right .header .rate .circle1 {
-  width: 18px;
-  height: 18px;
-  border: 1px solid #002772;
-  border-radius: 100%;
-}
-
-.men-section h1 {
-  color: #002772;
-}
-
-.men-section .right .bottom p {
-  color: #002772;
-}
-
-.men-section .btn .buy-btn {
-  background-color: #002772;
-  color: #FFFFFF;
-  border: none;
-}
-
-.men-section .btn .next-btn {
-  background-color: #FFFFFF;
-  border: 3px solid #002772;
-  color: #002772;
-}
-
-.women-section {
-  background-color: #FDE2FF;
-}
-
-
-.women-section .content .right .header .rate .rating {
-  display: flex;
-  gap: 2px;
-}
-
-.women-section .content .right .header .rate .rating p {
-  margin-right: 5px;
-}
-
-
-.women-section .content .right .header .rate .circle{
-  background-color: #720060;
-  width: 18px;
-  height: 18px;
-  border-radius: 100%;
-}
-
-.women-section .content .right .header .rate .circle1 {
-  width: 18px;
-  height: 18px;
-  border: 1px solid #720060;
-  border-radius: 100%;
-}
-
-.women-section h1 {
-  color: #720060;
-}
-
-.women-section .right .bottom p {
-  color: #720060;
-}
-
-.women-section .btn .buy-btn {
-  background-color: #720060;
-  color: #FFFFFF;
-  border: none;
-}
-
-.women-section .btn .next-btn {
-  background-color: #FFFFFF;
-  border: 3px solid #720060;
-  color: #720060;
-}
-
-.unavailable-product {
-  background-color: #DCDCDC;
-}
-
-.unavailable-product .content {
-  background-image: url(../assets/sad-face.png);
-  background-position: 
-    calc(100% - 50%)
-    calc(100% - 20%);
-  background-repeat: no-repeat;
-  background-size:auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 13px;
-}
-.unavailable-product .content p{
-  font-size: 20px;
-  font-weight: 400;
-  color: #1E1E1E;
-}
-
-.unavailable-product .content button {
-  width: 465px;
-  height: 42px;
-  border: #1E1E1E;
-  color: #1E1E1E;
-  background-color: transparent;
-  border-radius: 4px;
-  border: 3px solid #1E1E1E;
-  font-weight: 600;
-  font-size: 20px;
-}
-</style>
+<style src="../assets/style.css"></style>
