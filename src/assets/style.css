@@ -129,6 +129,7 @@
 
 .men-section {
   background-color: #D6E6FF;
+  background-image: url("./bg-pattern.png");
 }
 
 .men-section .content .right .header .rate .rating {
@@ -176,6 +177,7 @@
 
 .women-section {
   background-color: #FDE2FF;
+  background-image: url("./bg-pattern.png");
 }
 
 
